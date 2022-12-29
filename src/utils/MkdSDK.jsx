@@ -12,9 +12,24 @@ export default function MkdSDK() {
   this.setTable = function (table) {
     this._table = table;
   };
-  
+
   this.login = async function (email, password, role) {
-    //TODO
+    //TODO : Login user and store the token and role
+    const userData = { email: email, password: password, role: role };
+    const userLogin = await fetch(this._baseurl + `/v2/api/lambda/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-project":
+          "cmVhY3R0YXNrOmQ5aGVkeWN5djZwN3p3OHhpMzR0OWJtdHNqc2lneTV0Nw==",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    const user = await userLogin.json();
+    localStorage.setItem("token", user.token);
+    localStorage.setItem("role", user.role);
+    return user;
   };
 
   this.getHeader = function () {
@@ -27,7 +42,7 @@ export default function MkdSDK() {
   this.baseUrl = function () {
     return this._baseurl;
   };
-  
+
   this.callRestAPI = async function (payload, method) {
     const header = {
       "Content-Type": "application/json",
@@ -55,7 +70,7 @@ export default function MkdSDK() {
           throw new Error(jsonGet.message);
         }
         return jsonGet;
-      
+
       case "PAGINATE":
         if (!payload.page) {
           payload.page = 1;
@@ -84,10 +99,26 @@ export default function MkdSDK() {
       default:
         break;
     }
-  };  
+  };
 
   this.check = async function (role) {
-    //TODO
+    // TODO : checking if the user role is valid
+    const validRole = await fetch(this._baseurl + `/v2/api/lambda/check`, {
+      method: "POST",
+      headers: {
+        "x-project":
+          "cmVhY3R0YXNrOmQ5aGVkeWN5djZwN3p3OHhpMzR0OWJtdHNqc2lneTV0Nw==",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body:
+        // prettier-ignore
+        {
+          "role": role,
+        },
+    });
+
+    const isValidRole = await validRole.json();
+    return isValidRole;
   };
 
   return this;

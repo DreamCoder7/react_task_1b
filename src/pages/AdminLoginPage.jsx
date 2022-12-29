@@ -27,7 +27,22 @@ const AdminLoginPage = () => {
 
   const onSubmit = async (data) => {
     let sdk = new MkdSDK();
-    //TODO
+
+    //TODO based on the input (data) dispatch => LOGIN
+    const { email, password } = data;
+    const { error, _, role, token, user_id } = await sdk.login(
+      email,
+      password,
+      "admin"
+    );
+
+    dispatch({ type: "LOGIN", payload: { role, token, user_id } });
+
+    if (role) {
+      navigate("/admin/dashboard");
+    } else {
+      setError(error);
+    }
   };
 
   return (

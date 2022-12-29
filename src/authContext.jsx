@@ -13,9 +13,13 @@ const initialState = {
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      //TODO
+      //TODO : updating the initialState
       return {
         ...state,
+        isAuthenticated: true,
+        user: action.payload.user_id,
+        token: action.payload.token,
+        role: action.payload.role,
       };
     case "LOGOUT":
       localStorage.clear();
@@ -35,7 +39,7 @@ export const tokenExpireError = (dispatch, errorMessage) => {
   const role = localStorage.getItem("role");
   if (errorMessage === "TOKEN_EXPIRED") {
     dispatch({
-      type: "Logout",
+      type: "LOGOUT",
     });
     window.location.href = "/" + role + "/login";
   }
@@ -45,7 +49,8 @@ const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   React.useEffect(() => {
-    //TODO
+    //TODO : Checking if token is valid
+    tokenExpireError(dispatch, state.error);
   }, []);
 
   return (
