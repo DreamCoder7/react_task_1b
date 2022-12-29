@@ -1,6 +1,11 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
 import AuthProvider from "./authContext";
 import GlobalProvider from "./globalContext";
-import { BrowserRouter as Router } from "react-router-dom";
+import NotFoundPage from "./pages/NotFoundPage";
+
 import Main from "./main";
 
 function App() {
@@ -8,7 +13,9 @@ function App() {
     <AuthProvider>
       <GlobalProvider>
         <Router>
-          <Main />
+          <DndProvider backend={HTML5Backend}>
+            <Main />
+          </DndProvider>
         </Router>
       </GlobalProvider>
     </AuthProvider>

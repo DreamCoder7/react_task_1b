@@ -7,10 +7,8 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function renderRoutes(role) {
-  // role = null
   switch (role) {
     case "admin":
-      console.log(role);
       return (
         <Routes>
           <Route
@@ -24,7 +22,7 @@ function renderRoutes(role) {
       return (
         <Routes>
           <Route exact path="/" element={<AdminLoginPage />} />
-          {/* <Route exact path="/admin/login" element={<AdminLoginPage />}></Route> */}
+          <Route exact path="/admin/login" element={<AdminLoginPage />}></Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       );

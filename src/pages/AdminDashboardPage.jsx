@@ -1,54 +1,23 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../authContext";
+import { useDrop } from "react-dnd";
 
 import DashboardList from "../components/DashboardList";
 import downArrow from "../assets/icons/caret-down.svg";
 import userIcon from "../assets/icons/user.svg";
 import MkdSDK from "../utils/MkdSDK";
 
-const dashboardListContent = [
-  {
-    img: "",
-    title: "Rune raises $100,000 for marketing through NFT butterflies sale",
-    author: "ninjanft",
-    likeNum: 254,
-  },
-  {
-    img: "",
-    title: "The Cryptocurrency Trading Bible",
-    author: "deniscrypto",
-    likeNum: 203,
-  },
-  {
-    img: "",
-    title: "Designing our new company brand: Meta",
-    author: "meta_world98",
-    likeNum: 134,
-  },
-  {
-    img: "",
-    title: "Connect media partners, earn exciting rewards  for today",
-    author: "kingdom43world",
-    likeNum: 99,
-  },
-  {
-    img: "",
-    title: "Designing a more effective proejcts",
-    author: "sjkj3987423kjbdfsf",
-    likeNum: 88,
-  },
-];
-
-const getVideo = () => {
+const getVideo = async () => {
   const sdk = new MkdSDK();
 
   sdk._table = "video";
   sdk._method = "PAGINATE";
-  const list = sdk.callRestAPI(
-    { payload: { payload: {}, page: 1, limit: 10 } },
+  const dashboardList = await sdk.callRestAPI(
+    // prettier-ignore
+    { payload: { "payload": {}, "page": 1, "limit": 10 } },
     "PAGINATE"
   );
-  // console.log(list);
+  return dashboardList;
 };
 
 const AdminDashboardPage = () => {
@@ -57,6 +26,24 @@ const AdminDashboardPage = () => {
     dispatch({ type: "LOGOUT" });
     window.location.href = "/";
   };
+
+  const list = getVideo();
+  const [board, setBoard] = useState([]);
+
+  const [{ isOver }, dropRef] = useDrop(() => ({
+    accept: "aside",
+    drop: (item) => addListToBoard(item.id),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  const addListToBoard = (id) => {
+    const dashboardList = dashboardListContent.filter((item) => item.id === id);
+    setBoard([dashboardList[0]]);
+  };
+
+  getVideo();
 
   return (
     <>
@@ -88,18 +75,19 @@ const AdminDashboardPage = () => {
               <li className="text-lg text-gray-800">Author</li>
               <li className="flex gap-2 text-lg text-gray-800 cursor-pointer">
                 Most Liked
-                <img src={downArrow} alt className="w-6" />
+                <img src={downArrow} alt="" className="w-6" />
               </li>
             </ul>
-            <div className="flex flex-col gap-5 col-span-full">
-              {dashboardListContent.map((item, index) => (
+            <div className="grid gap-5 col-span-full" ref={dropRef}>
+              {board.map((item) => (
                 <DashboardList
-                  num={index + 1}
+                  id={item.id}
+                  num={item.id}
                   title={item.title}
                   author={item.author}
                   likeNum={item.likeNum}
                   img={item.img}
-                  key={index}
+                  key={item.id}
                 />
               ))}
             </div>

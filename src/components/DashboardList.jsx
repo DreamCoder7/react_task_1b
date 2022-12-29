@@ -1,10 +1,29 @@
 import React from "react";
+import { useDrag } from "react-dnd";
 
 import arrowUp from "../assets/icons/arrow-up.svg";
 
-export default function DashboardList({ num, img, title, author, likeNum }) {
+export default function DashboardList({
+  id,
+  num,
+  img,
+  title,
+  author,
+  likeNum,
+}) {
+  const [{ isDragging }, dragRef] = useDrag(() => ({
+    type: "aside",
+    item: { id: id },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
   return (
-    <aside className="grid grid-cols-3 items-center justify-items-center border border-gray-600 rounded-lg p-4">
+    <aside
+      className="grid grid-cols-3 items-center justify-items-center border border-gray-600 rounded-lg p-4"
+      ref={dragRef}
+    >
       <div className="flex gap-5 items-center">
         <p className="text-lg text-gray-800 ">0 {num}</p>
         <img src={img} alt="" />
